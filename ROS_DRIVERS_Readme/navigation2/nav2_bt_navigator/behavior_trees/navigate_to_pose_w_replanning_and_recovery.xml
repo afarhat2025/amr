@@ -1,0 +1,86 @@
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+  <RecoveryNode number_of_retries="100" name="navigate">
+    <RecoveryNode number_of_retries="100" name="NavigateRecovery">
+      <PipelineSequence name="NavigateWithReplanning">
+        <PlannerSelector selected_planner="{selected_planner}" default_planner="GridBased" topic_name="planner_selector"/>
+        <ControllerSelector selected_controller="{selected_controller}" default_controller="FollowPath" topic_name="controller_selector"/>
+        <Inverter>
+          <Sequence>
+            <GlobalUpdatedGoal/>
+            <Inverter>
+              <Sequence>
+                  <ClearCostmapAroundRobot name="ClearLocalCostmap-Subtree" reset_distance="2" service_name="/amr_1/local_costmap/clear_around_local_costmap"/>
+                  <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="2" service_name="/amr_1/global_costmap/clear_around_global_costmap"/>
+                <Wait wait_duration="5.0"/>
+              </Sequence>
+            </Inverter>
+          </Sequence>
+        </Inverter>
+        <Inverter>
+          <Sequence>
+            <GlobalUpdatedGoal/>
+            <Inverter>
+              <ComputePathToPose goal="{goal}" path="{path}" planner_id="{selected_planner}" />
+            </Inverter>
+          </Sequence>
+        </Inverter>
+        <Inverter>
+          <Sequence>
+            <IsRobotInGoalVicinity path="{path}" robot_base_frame="amr_1/base_link" global_frame="map" />
+            <Inverter>
+              <GoalReached goal="{goal}" robot_base_frame="amr_1/base_link"/>
+            </Inverter>
+          </Sequence>
+        </Inverter>
+        <RateController hz="0.5">
+          <RecoveryNode number_of_retries="1" name="ComputePathToPose">
+            <ComputePathToPose goal="{goal}" path="{path}" planner_id="{selected_planner}" />
+            <Sequence>
+              <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="2" service_name="/amr_1/global_costmap/clear_around_global_costmap"/>
+            </Sequence>
+          </RecoveryNode>
+        </RateController>
+        <ReactiveSequence name="MonitorAndFollowPath">
+          <PathLongerOnApproach path="{path}" prox_len="50.0" length_factor="1.0">
+            <RetryUntilSuccessful num_attempts="1">
+              <SequenceStar name="CancelingControlAndWait">
+                <CancelControl name="ControlCancel"/>
+                <ClearCostmapAroundRobot name="ClearLocalCostmap-Subtree" reset_distance="2" service_name="/amr_1/local_costmap/clear_around_local_costmap"/>
+                <Wait wait_duration="15.0"/>
+                <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="2" service_name="/amr_1/global_costmap/clear_around_global_costmap"/>>
+                <Wait wait_duration="15.0"/>
+              </SequenceStar>
+            </RetryUntilSuccessful>
+          </PathLongerOnApproach>
+          <RecoveryNode number_of_retries="1" name="FollowPath">
+            <FollowPath path="{path}" controller_id="{selected_controller}" />
+            <ClearCostmapAroundRobot name="ClearLocalCostmap-Subtree" reset_distance="2" service_name="/amr_1/local_costmap/clear_around_local_costmap"/>
+          </RecoveryNode>
+        </ReactiveSequence>
+      </PipelineSequence>
+      <PipelineSequence>
+        <Sequence>
+          <Inverter>
+            <GoalUpdated/>
+          </Inverter>
+          <IsPathValid path="{path}"/>
+        </Sequence>
+        <RecoveryNode number_of_retries="1" name="FollowPath">
+          <FollowPath path="{path}" controller_id="{selected_controller}" />
+          <Sequence>
+            <ClearCostmapAroundRobot name="ClearLocalCostmap-Subtree" reset_distance="2" service_name="/amr_1/local_costmap/clear_around_local_costmap"/>
+          </Sequence>
+        </RecoveryNode>
+      </PipelineSequence> 
+    </RecoveryNode>
+    <ReactiveFallback name="fallback">
+      <Sequence>
+        <ClearCostmapAroundRobot name="ClearLocalCostmap-Subtree" reset_distance="2" service_name="/amr_1/local_costmap/clear_around_local_costmap"/>
+        <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="2" service_name="/amr_1/global_costmap/clear_around_global_costmap"/>
+        <Wait wait_duration="5.0"/>
+      </Sequence>
+    </ReactiveFallback>
+  </RecoveryNode>
+  </BehaviorTree>
+</root>

@@ -1,0 +1,9 @@
+<library path="diffdrive_ctre">
+  <class name="diffdrive_ctre/DiffDriveCTREHardware"
+         type="diffdrive_ctre::DiffDriveCTREHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      The ros2_control hardware interface for controlling motors.
+    </description>
+  </class>
+</library>

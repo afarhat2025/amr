@@ -1,0 +1,90 @@
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RecoveryNode number_of_retries="10" name="navigate">
+      <RecoveryNode number_of_retries="100" name="NavigateRecovery">
+        <PipelineSequence name="NavigateWithReplanning">
+          <Inverter>
+            <Sequence>
+              <GlobalUpdatedGoal/>
+              <Inverter>
+                <Sequence>
+                  <ClearCostmapAroundRobot name="ClearLocalCostmap-Subtree" reset_distance="10" service_name="/amr_1/local_costmap/clear_around_local_costmap"/>
+                  <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="10" service_name="/amr_1/global_costmap/clear_around_global_costmap"/>
+                  <Wait wait_duration="1.0"/>
+                </Sequence>
+              </Inverter>
+            </Sequence>
+          </Inverter>
+          <Inverter>
+            <Sequence>
+                <GoalReached goals="{goals}" robot_base_frame="amr_1/base_link"/>
+              <GlobalUpdatedGoal/>
+            </Sequence>
+          </Inverter>
+          <Inverter>
+            <Sequence>
+              <GlobalUpdatedGoal/>
+              <Inverter>
+                <ReactiveSequence>
+                  <RemovePassedGoals input_goals="{goals}" output_goals="{goals}" robot_base_frame="amr_1/base_link" radius="0.7" />
+                  <ComputePathThroughPoses goals="{goals}" path="{path}" planner_id="GridBased"/>
+                </ReactiveSequence>
+              </Inverter>
+            </Sequence>
+          </Inverter>
+          <Inverter>
+            <Sequence>
+              <IsRobotInGoalVicinity path="{path}" robot_base_frame="amr_1/base_link" global_frame="map"/>
+              <Inverter>
+                  <GoalReached goals="{goals}" robot_base_frame="amr_1/base_link"/>
+              </Inverter>
+            </Sequence>
+          </Inverter>
+            <Fallback>  
+              <ReplanTrigger topic_name="/amr_1/replan_trigger" />
+              <RetryUntilSuccessful num_attempts="1"> 
+                <SequenceStar name="CancelingControlAndWait">
+                  <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="15" service_name="/amr_1/global_costmap/clear_around_global_costmap"/> 
+                  <!--CancelControl name="ControlCancel"/-->
+                  <!--Wait wait_duration="1.0"/-->
+                  <RemovePassedGoals input_goals="{goals}" output_goals="{goals}" robot_base_frame="amr_1/base_link"  radius="0.7"/>
+                  <ComputePathThroughPoses goals="{goals}" path="{path}" planner_id="GridBased" /> 
+                </SequenceStar>
+              </RetryUntilSuccessful>  
+            </Fallback>
+          <RemovePassedGoals input_goals="{goals}" output_goals="{goals}" robot_base_frame="amr_1/base_link"  radius="0.7"/>
+          <RecoveryNode number_of_retries="1" name="FollowPath">
+            <FollowPath path="{path}" controller_id="FollowPath" />
+            <Sequence>
+              <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="5" service_name="/amr_1/global_costmap/clear_around_global_costmap"/>
+              <!--Wait wait_duration="2.0"/-->
+            </Sequence>
+          </RecoveryNode>`
+        </PipelineSequence>
+        <PipelineSequence>
+        <RemovePassedGoals input_goals="{goals}" output_goals="{goals}" robot_base_frame="amr_1/base_link"  radius="0.7"/>
+          <Fallback>
+              <GoalReached goals="{goals}" robot_base_frame="amr_1/base_link"/>
+              <Sequence>
+                <IsPathValid path="{path}"/>
+                <RemovePassedGoals input_goals="{goals}" output_goals="{goals}" robot_base_frame="amr_1/base_link"  radius="0.7" />
+                  <Inverter>
+                    <GoalReached goals="{goals}" robot_base_frame="amr_1/base_link"/>
+                  </Inverter>
+                 <IsRobotInGoalVicinity path="{path}" robot_base_frame="amr_1/base_link" global_frame="map"/>
+                 <ComputePathThroughPoses goals="{goals}" path="{path}" planner_id="GridBased" />
+                <FollowPath path="{path}" controller_id="FollowPath" />
+              </Sequence>
+          </Fallback>
+        </PipelineSequence>
+      </RecoveryNode>
+      <ReactiveFallback name="fallback">
+        <Sequence>
+          <ClearCostmapAroundRobot name="ClearLocalCostmap-Subtree" reset_distance="20" service_name="/amr_1/local_costmap/clear_around_local_costmap"/>
+          <ClearCostmapAroundRobot name="ClearGlobalCostmap-Subtree" reset_distance="20" service_name="/amr_1/global_costmap/clear_around_global_costmap"/>
+          <Wait wait_duration="1.0"/>
+        </Sequence>
+      </ReactiveFallback>
+    </RecoveryNode>
+  </BehaviorTree>
+</root>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="diffbot">
+
+  <xacro:include filename="$(find amr_v4_description)/urdf/robot/amr.urdf.xacro" />
+  <xacro:include filename="$(find amr_v4_description)/urdf/robot/amr_system.ros2_control.xacro" />
+
+  <xacro:diffbot prefix="amr_1" />
+  <xacro:diffbot_system name="diff" prefix="" />
+
+</robot>

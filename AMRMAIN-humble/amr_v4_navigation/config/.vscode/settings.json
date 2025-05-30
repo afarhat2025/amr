@@ -1,0 +1,11 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/amr_1/AMRMAIN/install/zed_interfaces/lib/python3.8/site-packages",
+        "/home/amr_1/AMRMAIN/install/ros_phoenix/lib/python3.8/site-packages",
+        "/home/amr_1/AMRMAIN/install/py_pubsub/lib/python3.8/site-packages",
+        "/home/amr_1/AMRMAIN/build/amr_v4_perception",
+        "/home/amr_1/AMRMAIN/install/amr_v4_perception/lib/python3.8/site-packages",
+        "/home/amr_1/AMRMAIN/install/amr_v4_navigation/lib/python3.8/site-packages",
+        "/opt/ros/foxy/lib/python3.8/site-packages"
+    ]
+}

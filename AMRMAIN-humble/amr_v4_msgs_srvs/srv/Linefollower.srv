@@ -1,0 +1,5 @@
+string start
+string stop
+---
+string mark
+int8 error 

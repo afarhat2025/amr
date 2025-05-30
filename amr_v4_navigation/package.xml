@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>amr_v4_navigation</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="amr_1@todo.todo">amr_1</maintainer>
+  <license>TODO: License declaration</license>
+
+  <exec_depend>twist_mux</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>xterm</exec_depend>
+  <exec_depend>teleop_twist_joy</exec_depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_bt_navigator</exec_depend>
+  <exec_depend>nav2_simple_commander</exec_depend>
+  <exec_depend>rtabmap_odom</exec_depend>
+  <exec_depend>rtabmap_msgs</exec_depend>
+  <exec_depend>rtabmap_slam</exec_depend>
+  <exec_depend>rtabmap_util</exec_depend>
+  <exec_depend>rtabmap_rviz_plugins</exec_depend>
+  <exec_depend>zed_wrapper</exec_depend>
+  <exec_depend>rtabmap_viz</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>realsense2_camera</exec_depend>
+  <exec_depend>apriltag_ros</exec_depend>
+  <exec_depend>apriltag_msgs</exec_depend>
+  <exec_depend>navigation2</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>amr_v4_msgs_srvs</exec_depend>
+  <exec_depend>depthimage_to_laserscan</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
